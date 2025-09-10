@@ -123,21 +123,43 @@
         <!-- Step 3: Coordonnées -->
         <div class="card" id="card-info" style="margin-top:16px;display:none" aria-labelledby="indicator-3">
           <h2>3 — Renseignez vos informations</h2>
-          <form action="https://formspree.io/f/xeolnppw" method="POST">
-  <label for="nom">Nom complet</label>
-  <input type="text" name="nom" id="nom" required placeholder="Prénom Nom">
-
-  <label for="email">Email</label>
-  <input type="email" name="email" id="email" required placeholder="votre@mail.com">
-
-  <label for="tel">Téléphone</label>
-  <input type="tel" name="tel" id="tel" required placeholder="06 12 34 56 78">
-
-  <label for="message">Informations supplémentaires</label>
-  <textarea name="message" id="message" rows="4" placeholder="Lieu, horaires, playlist souhaitée..."></textarea>
-
+          <form id="reservation-form">
+  <input type="text" name="nom" required placeholder="Prénom Nom">
+  <input type="email" name="email" required placeholder="votre@mail.com">
+  <input type="tel" name="tel" required placeholder="06 12 34 56 78">
+  <select name="type">
+    <option value="anniversaire">Anniversaire</option>
+    <option value="mariage">Mariage</option>
+    <option value="corporate">Événement corporate</option>
+  </select>
+  <textarea name="message" rows="4" placeholder="Lieu, horaires, playlist souhaitée..."></textarea>
   <button type="submit">Envoyer la demande</button>
 </form>
+
+<script>
+document.getElementById('reservation-form').addEventListener('submit', function(event) {
+  event.preventDefault();
+
+  // Email à vous (DJ)
+  emailjs.sendForm('service_xxxxx', 'template_dj', this)
+    .then(function() {
+      console.log('Mail envoyé au DJ !');
+    }, function(error) {
+      console.error('Erreur : ', error);
+    });
+
+  // Email au client
+  emailjs.sendForm('service_xxxxx', 'template_client', this)
+    .then(function() {
+      alert('Votre réservation a été envoyée et un email de confirmation a été envoyé !');
+    }, function(error) {
+      console.error('Erreur : ', error);
+    });
+
+  this.reset(); // réinitialise le formulaire
+});
+</script>
+
 
         </div>
 
@@ -434,6 +456,7 @@
   </script>
 </body>
 </html>
+
 
 
 
