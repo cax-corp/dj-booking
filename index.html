@@ -116,25 +116,22 @@
         <!-- Step 3: Coordonnées -->
         <div class="card" id="card-info" style="margin-top:16px;display:none" aria-labelledby="indicator-3">
           <h2>3 — Renseignez vos informations</h2>
-          <form id="booking-form" autocomplete="on">
-            <label for="nom">Nom complet</label>
-            <input id="nom" type="text" required placeholder="Prénom Nom" />
+          <form action="https://formspree.io/f/xxxxxxx" method="POST">
+  <label for="nom">Nom complet</label>
+  <input type="text" name="nom" id="nom" required placeholder="Prénom Nom">
 
-            <label for="email">Email</label>
-            <input id="email" type="email" required placeholder="votre@mail.com" />
+  <label for="email">Email</label>
+  <input type="email" name="email" id="email" required placeholder="votre@mail.com">
 
-            <label for="tel">Téléphone</label>
-            <input id="tel" type="tel" required placeholder="06 12 34 56 78" />
+  <label for="tel">Téléphone</label>
+  <input type="tel" name="tel" id="tel" required placeholder="06 12 34 56 78">
 
-            <label for="message">Informations supplémentaires (lieu, horaires)</label>
-            <textarea id="message" rows="3" placeholder="Adresse, contraintes, playlist souhaitée..."></textarea>
+  <label for="message">Informations supplémentaires</label>
+  <textarea name="message" id="message" rows="4" placeholder="Lieu, horaires, playlist souhaitée..."></textarea>
 
-            <div class="spacer"></div>
-            <div class="flex">
-              <button class="btn" type="submit" id="btn-submit">Étape suivante — Vérifier</button>
-              <button class="btn secondary" type="button" id="btn-back-to-date">Retour</button>
-            </div>
-          </form>
+  <button type="submit">Envoyer la demande</button>
+</form>
+
         </div>
 
         <!-- Step 4: Review -->
@@ -430,3 +427,4 @@
   </script>
 </body>
 </html>
+
