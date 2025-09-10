@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Réservation DJ — Formulaire</title>
+  <meta name="description" content="Prototype de réservation DJ — HTML/CSS/JS pur, prêt à déployer." />
+  <style>
+    :root{
+      --bg:#061025; --card:#0f1724; --muted:#9aa8bf; --accent:#7c3aed; --accent-2:#2563eb; --success:#16a34a;
+      --max-w:1000px; --r:12px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;color:#eaf2ff;background:linear-gradient(180deg,var(--bg),#071028);-webkit-font-smoothing:antialiased;}
+    .wrap{max-width:var(--max-w);margin:28px auto;padding:18px;}
+    header{display:flex;justify-content:space-between;align-items:center;gap:12px}
+    h1{margin:0;font-size:1.4rem}
+    p.lead{margin:0;color:var(--muted)}
+
+    /* Progress */
+    .progress-wrap{background:rgba(255,255,255,0.03);border-radius:999px;padding:6px;margin:18px 0}
+    .progress{height:12px;background:linear-gradient(90deg,var(--accent),var(--accent-2));border-radius:999px;width:0%}
+
+    .steps{display:flex;gap:10px;margin-bottom:16px}
+    .step{flex:1;background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;font-size:0.9rem;text-align:center}
+    .step.active{outline:3px solid rgba(124,58,237,0.22)}
+
+    main{display:grid;grid-template-columns:1fr 360px;gap:20px}
+    @media(max-width:920px){main{grid-template-columns:1fr}}
+    .card{background:var(--card);padding:16px;border-radius:var(--r);border:1px solid rgba(255,255,255,0.03)}
+    label{display:block;margin:8px 0 6px;font-weight:600}
+    input[type=text],input[type=email],input[type=tel],select,textarea,input[type=date]{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
+    textarea{resize:vertical}
+    .btn{display:inline-block;background:var(--accent);color:white;padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
+    .btn.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+    .forfait{display:flex;justify-content:space-between;padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);margin-bottom:8px;cursor:pointer}
+    .forfait.selected{outline:2px solid rgba(124,58,237,0.45)}
+    .tag{font-size:0.85rem;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,0.03)}
+    .muted{color:var(--muted);font-size:0.95rem}
+    .spacer{height:12px}
+    footer{margin-top:22px;text-align:center;color:var(--muted);font-size:0.9rem}
+
+    /* small utilities */
+    .flex{display:flex;gap:10px;align-items:center}
+    .right{text-align:right}
+    .blocked{color:#ffb4b4}
+    .ok{color:var(--success)}
+    .small{font-size:0.9rem}
+    .list-compact{font-size:0.9rem;line-height:1.4}
+    .danger{color:#ff9b9b}
+    pre{white-space:pre-wrap;word-break:break-word}
+  </style>
+</head>
+<body>
+  <div class="wrap" role="main">
+    <header>
+      <div>
+        <h1>DJ — Réservation de prestation</h1>
+        <p class="lead">Suivez les étapes dans l'ordre pour soumettre votre demande.</p>
+      </div>
+      <div class="small muted">Statut: <strong id="status">Prêt</strong></div>
+    </header>
+
+    <div class="progress-wrap" aria-hidden="true"><div class="progress" id="progress"></div></div>
+
+    <div class="steps" aria-hidden="true">
+      <div class="step" id="indicator-1">1. Prestation</div>
+      <div class="step" id="indicator-2">2. Date</div>
+      <div class="step" id="indicator-3">3. Coordonnées</div>
+      <div class="step" id="indicator-4">4. Vérification</div>
+    </div>
+
+    <main>
+      <!-- Left: workflow -->
+      <section>
+        <!-- Step 1: Forfaits -->
+        <div class="card" id="card-services" aria-labelledby="indicator-1">
+          <h2>1 — Choisissez votre prestation</h2>
+          <div class="forfait" data-value="Starter" tabindex="0">
+            <div><strong>Starter</strong><div class="muted">Anniversaire — 3-4h</div></div>
+            <div class="tag">300–400€</div>
+          </div>
+
+          <div class="forfait" data-value="Standard" tabindex="0">
+            <div><strong>Standard</strong><div class="muted">Mariage — 4-6h</div></div>
+            <div class="tag">600–800€</div>
+          </div>
+
+          <div class="forfait" data-value="Premium" tabindex="0">
+            <div><strong>Premium</strong><div class="muted">Mariage/Événement — 6-8h</div></div>
+            <div class="tag">1000–1500€</div>
+          </div>
+
+          <div class="spacer"></div>
+          <div class="flex">
+            <button class="btn" id="btn-to-date">Suivant — Date</button>
+            <button class="btn secondary" id="btn-reset">Réinitialiser</button>
+          </div>
+        </div>
+
+        <!-- Step 2: Date -->
+        <div class="card" id="card-date" style="margin-top:16px;display:none" aria-labelledby="indicator-2">
+          <h2>2 — Sélectionnez une date</h2>
+          <label for="date">Date souhaitée</label>
+          <input id="date" type="date" />
+          <div class="spacer"></div>
+          <div id="date-info" class="muted">Aucune date sélectionnée.</div>
+
+          <div class="spacer"></div>
+          <div class="flex">
+            <button class="btn" id="btn-to-info">Suivant — Coordonnées</button>
+            <button class="btn secondary" id="btn-back-to-services">Retour</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Coordonnées -->
+        <div class="card" id="card-info" style="margin-top:16px;display:none" aria-labelledby="indicator-3">
+          <h2>3 — Renseignez vos informations</h2>
+          <form id="booking-form" autocomplete="on">
+            <label for="nom">Nom complet</label>
+            <input id="nom" type="text" required placeholder="Prénom Nom" />
+
+            <label for="email">Email</label>
+            <input id="email" type="email" required placeholder="votre@mail.com" />
+
+            <label for="tel">Téléphone</label>
+            <input id="tel" type="tel" required placeholder="06 12 34 56 78" />
+
+            <label for="message">Informations supplémentaires (lieu, horaires)</label>
+            <textarea id="message" rows="3" placeholder="Adresse, contraintes, playlist souhaitée..."></textarea>
+
+            <div class="spacer"></div>
+            <div class="flex">
+              <button class="btn" type="submit" id="btn-submit">Étape suivante — Vérifier</button>
+              <button class="btn secondary" type="button" id="btn-back-to-date">Retour</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Step 4: Review -->
+        <div class="card" id="card-review" style="margin-top:16px;display:none" aria-labelledby="indicator-4">
+          <h2>4 — Vérifiez et envoyez</h2>
+          <div id="review-area" class="list-compact muted">Aucune information à vérifier.</div>
+
+          <div class="spacer"></div>
+          <div class="flex">
+            <button class="btn" id="btn-confirm">Envoyer la demande</button>
+            <button class="btn secondary" id="btn-back-to-info">Modifier</button>
+          </div>
+
+          <div class="spacer"></div>
+          <div id="booking-response" class="muted"></div>
+        </div>
+      </section>
+
+      <!-- Right column: summary & controls -->
+      <aside>
+        <div class="card">
+          <h3>Résumé</h3>
+          <div class="spacer"></div>
+          <div><strong>Forfait:</strong> <span id="summary-plan">—</span></div>
+          <div><strong>Date:</strong> <span id="summary-date">—</span></div>
+          <div><strong>Nom:</strong> <span id="summary-name">—</span></div>
+          <div class="spacer"></div>
+          <div class="small muted">Réservations locales: <strong id="count">0</strong></div>
+          <div class="spacer"></div>
+          <div class="muted">Prototype: stockage local. Remplacez par une API en production.</div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3>Forfaits rapides</h3>
+          <div class="forfait"><div><strong>Starter</strong><div class="muted">3-4h</div></div><div class="tag">300–400€</div></div>
+          <div class="forfait"><div><strong>Standard</strong><div class="muted">4-6h</div></div><div class="tag">600–800€</div></div>
+          <div class="forfait"><div><strong>Premium</strong><div class="muted">6-8h</div></div><div class="tag">1000–1500€</div></div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3>Dates bloquées</h3>
+          <div id="blocked-list" class="muted">Aucune</div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <div class="flex">
+            <button class="btn secondary" id="btn-export">Exporter CSV</button>
+            <button class="btn secondary" id="btn-clear">Supprimer locaux</button>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      © 2025 DJ — Prototype de réservation — Code pur HTML/CSS/JS
+    </footer>
+  </div>
+
+  <script>
+    // ------------------------------------------------------------
+    // Prototype JS — autogéré en localStorage
+    // Copier dans index.html et ouvrir dans navigateur
+    // Pour production : remplacer saveBookings/loadBookings par API POST/GET
+    // ------------------------------------------------------------
+    (function(){
+      const TOTAL_STEPS = 4;
+      let step = 1;
+      const STORAGE_KEY = 'dj_bookings_v3';
+
+      // Elements
+      const progressEl = document.getElementById('progress');
+      const statusEl = document.getElementById('status');
+      const countEl = document.getElementById('count');
+      const blockedListEl = document.getElementById('blocked-list');
+
+      const indicators = [null,
+        document.getElementById('indicator-1'),
+        document.getElementById('indicator-2'),
+        document.getElementById('indicator-3'),
+        document.getElementById('indicator-4'),
+      ];
+
+      const cardServices = document.getElementById('card-services');
+      const cardDate = document.getElementById('card-date');
+      const cardInfo = document.getElementById('card-info');
+      const cardReview = document.getElementById('card-review');
+
+      const btnToDate = document.getElementById('btn-to-date');
+      const btnToInfo = document.getElementById('btn-to-info');
+      const btnSubmit = document.getElementById('btn-submit');
+      const btnConfirm = document.getElementById('btn-confirm');
+
+      const btnBackToServices = document.getElementById('btn-back-to-services');
+      const btnBackToDate = document.getElementById('btn-back-to-date');
+      const btnBackToInfo = document.getElementById('btn-back-to-info');
+
+      const dateInput = document.getElementById('date');
+      const dateInfo = document.getElementById('date-info');
+
+      const nomInput = document.getElementById('nom');
+      const emailInput = document.getElementById('email');
+      const telInput = document.getElementById('tel');
+      const messageInput = document.getElementById('message');
+
+      const summaryPlan = document.getElementById('summary-plan');
+      const summaryDate = document.getElementById('summary-date');
+      const summaryName = document.getElementById('summary-name');
+      const reviewArea = document.getElementById('review-area');
+      const bookingResponse = document.getElementById('booking-response');
+
+      const btnReset = document.getElementById('btn-reset');
+      const btnExport = document.getElementById('btn-export');
+      const btnClear = document.getElementById('btn-clear');
+
+      // State
+      let selectedPlan = null;
+
+      // Utility: bookings in localStorage
+      function loadBookings(){
+        try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+        catch(e){ return []; }
+      }
+      function saveBookings(arr){ localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); }
+      function refreshUI(){
+        const bookings = loadBookings();
+        countEl.textContent = bookings.length;
+        if(bookings.length === 0){
+          blockedListEl.textContent = 'Aucune';
+        } else {
+          blockedListEl.innerHTML = bookings.map(b=>{
+            const d = new Date(b.date);
+            return '<div>' + d.toLocaleDateString() + ' — ' + escapeHtml(b.nom) + ' — ' + escapeHtml(b.plan) + '</div>';
+          }).join('');
+        }
+      }
+
+      function escapeHtml(str){
+        if(!str) return '';
+        return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+      }
+
+      // Progress and indicator
+      function updateProgress(){
+        const pct = Math.round(((step-1)/(TOTAL_STEPS-1))*100);
+        progressEl.style.width = pct + '%';
+        for(let i=1;i<=4;i++){
+          indicators[i].classList.toggle('active', i === step);
+        }
+      }
+
+      function showStep(n){
+        step = n;
+        updateProgress();
+        cardServices.style.display = (n===1)?'block':'none';
+        cardDate.style.display = (n===2)?'block':'none';
+        cardInfo.style.display = (n===3)?'block':'none';
+        cardReview.style.display = (n===4)?'block':'none';
+      }
+
+      // Forfait selection
+      cardServices.querySelectorAll('.forfait').forEach(el=>{
+        el.addEventListener('click', function(){
+          cardServices.querySelectorAll('.forfait').forEach(x=>x.classList.remove('selected'));
+          this.classList.add('selected');
+          selectedPlan = this.getAttribute('data-value');
+          summaryPlan.textContent = selectedPlan;
+        });
+        // keyboard accessibility
+        el.addEventListener('keydown', function(e){
+          if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); this.click(); }
+        });
+      });
+
+      btnToDate.addEventListener('click', function(){
+        if(!selectedPlan){ alert('Veuillez choisir un forfait avant de continuer.'); return; }
+        showStep(2);
+      });
+      btnBackToServices && btnBackToServices.addEventListener('click', ()=> showStep(1));
+
+      // Date selection validation and blocking check
+      dateInput.addEventListener('change', function(){
+        const v = this.value;
+        if(!v){ dateInfo.textContent = 'Aucune date sélectionnée.'; summaryDate.textContent = '—'; return; }
+        const d = new Date(v + 'T00:00:00');
+        const bookings = loadBookings();
+        const blocked = bookings.some(b => new Date(b.date).toDateString() === d.toDateString());
+        if(blocked){
+          dateInfo.innerHTML = '<span class="blocked">Date déjà réservée. Choisissez une autre date.</span>';
+        } else {
+          dateInfo.innerHTML = '<span class="ok">Date disponible.</span>';
+        }
+        summaryDate.textContent = d.toLocaleDateString();
+      });
+
+      btnToInfo.addEventListener('click', function(){
+        if(!dateInput.value){ alert('Veuillez sélectionner une date.'); return; }
+        const d = new Date(dateInput.value + 'T00:00:00');
+        const bookings = loadBookings();
+        const blocked = bookings.some(b => new Date(b.date).toDateString() === d.toDateString());
+        if(blocked){ alert('La date est déjà réservée. Choisissez une autre date.'); return; }
+        showStep(3);
+      });
+
+      btnBackToDate && btnBackToDate.addEventListener('click', ()=> showStep(2));
+
+      // Form submit -> show review
+      document.getElementById('booking-form').addEventListener('submit', function(e){
+        e.preventDefault();
+        if(!nomInput.value.trim() || !emailInput.value.trim() || !telInput.value.trim()){
+          alert('Remplissez tous les champs requis (nom, email, téléphone).');
+          return;
+        }
+        summaryName.textContent = nomInput.value.trim();
+        const dLabel = dateInput.value ? new Date(dateInput.value + 'T00:00:00').toLocaleDateString() : '—';
+        reviewArea.innerHTML = ''
+          + '<div><strong>Forfait:</strong> ' + escapeHtml(selectedPlan || '—') + '</div>'
+          + '<div><strong>Date:</strong> ' + escapeHtml(dLabel) + '</div>'
+          + '<div><strong>Nom:</strong> ' + escapeHtml(nomInput.value.trim()) + '</div>'
+          + '<div><strong>Email:</strong> ' + escapeHtml(emailInput.value.trim()) + '</div>'
+          + '<div><strong>Téléphone:</strong> ' + escapeHtml(telInput.value.trim()) + '</div>'
+          + (messageInput.value.trim() ? '<div><strong>Note:</strong> ' + escapeHtml(messageInput.value.trim()) + '</div>' : '');
+        showStep(4);
+      });
+
+      btnBackToInfo && btnBackToInfo.addEventListener('click', ()=> showStep(3));
+
+      // Confirm booking -> save locally (prototype)
+      btnConfirm.addEventListener('click', function(){
+        if(!selectedPlan || !dateInput.value || !nomInput.value.trim() || !emailInput.value.trim() || !telInput.value.trim()){
+          alert('Données manquantes. Revenez en arrière et vérifiez toutes les étapes.');
+          return;
+        }
+        const bookings = loadBookings();
+        const dISO = new Date(dateInput.value + 'T00:00:00').toISOString();
+        const exists = bookings.some(b => new Date(b.date).toDateString() === new Date(dISO).toDateString());
+        if(exists){
+          bookingResponse.innerHTML = '<span class="danger">Erreur: la date est déjà prise.</span>';
+          return;
+        }
+        const newB = {
+          plan: selectedPlan,
+          date: dISO,
+          nom: nomInput.value.trim(),
+          email: emailInput.value.trim(),
+          tel: telInput.value.trim(),
+          message: messageInput.value.trim(),
+          created: new Date().toISOString()
+        };
+        bookings.push(newB);
+        saveBookings(bookings);
+        bookingResponse.innerHTML = '<span class="ok">Réservation enregistrée localement. (Prototype)</span>';
+        statusEl.textContent = 'Réservation enregistrée';
+        refreshUI();
+        // NOTE: pour envoyer réellement, effectuez ici un fetch POST vers votre API / Formspree.
+      });
+
+      // Reset / clear / export
+      btnReset.addEventListener('click', function(){
+        if(!confirm('Réinitialiser la sélection en cours ?')) return;
+        selectedPlan = null;
+        document.querySelectorAll('.forfait').forEach(x=>x.classList.remove('selected'));
+        summaryPlan.textContent = '—';
+        showStep(1);
+      });
+
+      btnClear.addEventListener('click', function(){
+        if(!confirm('Supprimer toutes les réservations locales ?')) return;
+        localStorage.removeItem(STORAGE_KEY);
+        refreshUI();
+      });
+
+      btnExport.addEventListener('click', function(){
+        const bookings = loadBookings();
+        if(bookings.length === 0){ alert('Aucune réservation à exporter.'); return; }
+        const rows = [['plan','date','nom','email','tel','message','created']];
+        bookings.forEach(b => rows.push([b.plan, b.date, b.nom, b.email, b.tel, b.message, b.created]));
+        const csv = rows.map(r => r.map(cell => '"' + String(cell).replace(/"/g,'""') + '"').join(',')).join('\n');
+        const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'reservations_dj.csv';
+        document.body.appendChild(a); a.click(); a.remove();
+        URL.revokeObjectURL(url);
+      });
+
+      // Init
+      refreshUI();
+      updateProgress();
+      showStep(1);
+
+    })();
+  </script>
+</body>
+</html>
