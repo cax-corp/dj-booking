@@ -141,7 +141,7 @@ document.getElementById('reservation-form').addEventListener('submit', function(
   event.preventDefault();
 
   // Email à vous (DJ)
-  emailjs.sendForm('service_xxxxx', 'template_dj', this)
+  emailjs.sendForm('service_swvzzwa', 'template_dj', this)
     .then(function() {
       console.log('Mail envoyé au DJ !');
     }, function(error) {
@@ -149,7 +149,7 @@ document.getElementById('reservation-form').addEventListener('submit', function(
     });
 
   // Email au client
-  emailjs.sendForm('service_xxxxx', 'template_client', this)
+  emailjs.sendForm('service_swvzzwa', 'template_client', this)
     .then(function() {
       alert('Votre réservation a été envoyée et un email de confirmation a été envoyé !');
     }, function(error) {
@@ -456,6 +456,7 @@ document.getElementById('reservation-form').addEventListener('submit', function(
   </script>
 </body>
 </html>
+
 
 
 
